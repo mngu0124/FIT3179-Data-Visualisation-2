@@ -1,0 +1,12 @@
+{
+    "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+    "title": { "text": "Cheapest European Cities" },
+    "data": {
+    "url": "max_temp_2022_02_27.csv"
+    },
+    "mark": "bar",
+    "encoding": {
+    "x": { "field": "MaxTemp", "type": "quantitative" },
+    "y": { "field": "Location", "type": "nominal" }
+    }
+}
