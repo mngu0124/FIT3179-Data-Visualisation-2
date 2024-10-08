@@ -2,26 +2,39 @@
   "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
   "width": 600,
   "height": 550,
-  "title": "Average Max Temperature at 45 Weather Stations across Australia in 2022",
+  "title": "Average Max Temperature at 45 Weather Stations across Australia (2000-2080)",
   "projection": {
     "type": "equalEarth",
-    "center": [135, -25],  
-    "scale": 800,             
-    "clipExtent": [[0, 0], [600, 550]]  
+    "center": [135, -25],
+    "scale": 800,
+    "clipExtent": [[0, 0], [600, 550]]
   },
+  "params": [
+    {
+      "name": "yearSelection",
+      "value": 2000,
+      "bind": {
+        "input": "range",
+        "min": 2000,
+        "max": 2080,
+        "step": 20,
+        "name": "Year: "
+      }
+    }
+  ],
   "layer": [
     {
       "data": {
-        "sphere": true  
+        "sphere": true
       },
       "mark": {
         "type": "geoshape",
-        "fill": "#e0f7fa",  
+        "fill": "#e0f7fa",
         "stroke": "none"
       }
     },
     {
-      "data": {"graticule": {"step": [10, 10]}},  
+      "data": {"graticule": {"step": [10, 10]}},
       "mark": {"type": "geoshape", "stroke": "#cccccc", "strokeWidth": 1}
     },
     {
@@ -42,35 +55,47 @@
       "mark": {"type": "geoshape", "fill": "none", "stroke": "black", "strokeWidth": 1},
       "encoding": {
         "tooltip": {
-          "field": "properties.STATE_NAME", 
+          "field": "properties.STATE_NAME",
           "type": "nominal",
           "title": "State Name"
-        }  
+        }
       }
     },
-    
     {
       "data": {
-        "url": "max_temp_2022_02_27.csv"
+        "url": "average_max_temp_weather_stations_with_coords.csv"
       },
       "mark": {"type": "circle", "tooltip": {"content": "data"}},
       "encoding": {
         "longitude": {"field": "Longitude", "type": "quantitative"},
         "latitude": {"field": "Latitude", "type": "quantitative"},
         "color": {
-          "field": "MaxTemp",
+          "field": "Average_Max_Temperature",
           "type": "quantitative",
           "title": "Max Temperature (°C)",
-          "scale": {"scheme": "reds"}
+          "scale": {
+    "scheme": "reds",
+    "domain": [20, 50]  
+  }
         },
-        "size": { 
-          "value": 100  
+        "size": {
+          "value": 100
         },
         "tooltip": [
-          {"field": "Location", "type": "nominal", "title": "Weather Stattion"}, 
-          {"field": "MaxTemp", "type": "quantitative", "title": "Max Temperature (°C)", "format": ".1f"}
+          {"field": "Location", "type": "nominal", "title": "Weather Station"},
+          {"field": "Average_Max_Temperature", "type": "quantitative", "title": "Max Temperature (°C)", "format": ".1f"},
+          {"field": "Year", "type": "quantitative", "title": "Year"}
         ]
-      }
+      },
+      "transform": [
+        {
+          "calculate": "toNumber(datum.Year)",
+          "as": "Year"
+        },
+        {
+          "filter": "datum.Year == yearSelection"
+        }
+      ]
     }
   ]
 }

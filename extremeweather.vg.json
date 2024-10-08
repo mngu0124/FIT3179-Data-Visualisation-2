@@ -1,0 +1,160 @@
+{
+  "$schema": "https://vega.github.io/schema/vega/v5.json",
+  "description": "Sunburst chart with colorblind-friendly custom colors for event types, gradient colors for years, light tints for states, and legends for weather events, states, and years.",
+  "width": 600,
+  "height": 600,
+  "padding": {"left": 5, "right": 250, "top": 5, "bottom": 5},
+  "autosize": "none",
+
+  "signals": [
+      {
+          "name": "eventTypeFilter",
+          "value": "All",
+          "bind": {
+              "input": "select",
+              "options": ["All", "Wind", "Rain", "Flood", "Hail", "Tornado", "Lightning"],
+              "labels": ["All", "Wind", "Rain", "Flood", "Hail", "Tornado", "Lightning"],
+              "name": "Select Event Type: "
+          }
+      }
+  ],
+
+  "data": [
+      {
+          "name": "tree",
+          "url": "extreme_weather_hierarchy.json",
+          "transform": [
+              {
+                  "type": "stratify",
+                  "key": "id",
+                  "parentKey": "parent"
+              },
+              {
+                  "type": "filter",
+                  "expr": "eventTypeFilter === 'All' || datum.name === eventTypeFilter || datum.parent === 'Root' || indexof(datum.parent, eventTypeFilter) >= 0"
+              },
+              {
+                  "type": "partition",
+                  "field": "size",
+                  "sort": {"field": "value"},
+                  "size": [{"signal": "2 * PI"}, {"signal": "width / 2"}],
+                  "as": ["a0", "r0", "a1", "r1", "depth", "children"]
+              }
+          ]
+      }
+  ],
+
+  "scales": [
+      {
+          "name": "colorEventType",
+          "type": "ordinal",
+          "domain": ["Wind", "Rain", "Hail", "Tornado", "Lighting"],
+          "range": ["#0072B2", "#E69F00", "#56B4E9", "#F0E442", "#CC79A7"]  
+      },
+      {
+          "name": "colorYear",
+          "type": "linear",
+          "domain": {"data": "tree", "field": "name"},
+          "range": ["#e7f2ff", "#1f77b4"],
+          "zero": false,
+          "domainMin": 2010, 
+          "domainMax": 2020
+      },
+      {
+          "name": "colorState",
+          "type": "ordinal",
+          "domain": ["NSW", "QLD", "VIC", "SA", "TAS", "NT", "WA"],
+          "range": ["#0072B2", "#E69F00", "#56B4E9", "#F0E442", "#D55E00", "#CC79A7", "#999999"]  
+      }
+  ],
+
+  "marks": [
+      {
+          "type": "arc",
+          "from": {"data": "tree"},
+          "encode": {
+              "enter": {
+                  "x": {"signal": "width / 2"},
+                  "y": {"signal": "height / 2"},
+                  "fill": {
+                      "signal": "datum.depth === 1 ? scale('colorEventType', datum.name) : (datum.depth === 2 ? scale('colorState', datum.name) : (datum.depth === 3 ? scale('colorYear', datum.name) : 'lightgray'))"
+                  },
+                  "tooltip": {
+                      "signal": "datum.name + (datum.size ? ', ' + datum.size + ' events in ' + datum.parent : '')"
+                  }
+              },
+              "update": {
+                  "startAngle": {"field": "a0"},
+                  "endAngle": {"field": "a1"},
+                  "innerRadius": {"field": "r0"},
+                  "outerRadius": {"field": "r1"},
+                  "stroke": {"value": "white"},
+                  "strokeWidth": {"value": 0.5},
+                  "zindex": {"value": 0}
+              },
+              "hover": {
+                  "stroke": {"value": "black"},
+                  "strokeWidth": {"value": 2},
+                  "zindex": {"value": 1}
+              }
+          }
+      },
+      {
+        "type": "rule",
+        "encode": {
+          "enter": {
+            "x": {"value": 350},  
+            "y": {"value": 480},
+            "x2": {"value": 500},  
+            "y2": {"value": 580},
+            "strokeWidth": {"value": 2},
+            "stroke": {"value": "black"}
+          }
+        }
+      },
+      
+      {
+        "type": "text",
+        "encode": {
+          "enter": {
+            "x": {"value": 420},  
+            "y": {"value": 600},
+            "text": {"value": "Wind is the most frequent event in NSW"},
+            "fontSize": {"value": 14},
+            "fontWeight": {"value": "bold"},
+            "fill": {"value": "black"},
+            "align": {"value": "left"}
+          }
+        }
+      }
+  ],
+
+  "legends": [
+    {
+      "fill": "colorEventType",
+      "title": "Weather Events",
+      "orient": "right",
+      "direction": "vertical",
+      "symbolSize": 150,  
+      "labelFontSize": 14,  
+      "titleFontSize": 16
+    },
+    {
+      "fill": "colorState",
+      "title": "States",
+      "orient": "right",
+      "direction": "vertical",
+      "symbolSize": 150,
+      "labelFontSize": 14,
+      "titleFontSize": 16
+    },
+    {
+      "fill": "colorYear",
+      "title": "Years",
+      "orient": "right",
+      "type": "gradient",  
+      "labelFontSize": 14,
+      "titleFontSize": 16
+    }
+  ]
+}

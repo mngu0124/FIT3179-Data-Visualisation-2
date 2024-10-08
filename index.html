@@ -1,19 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<script src="https://cdn.jsdelivr.net/npm/vega@5.20.2"></script>
-<script src="https://cdn.jsdelivr.net/npm/vega-lite@5.1.0"></script>
-<script src="https://cdn.jsdelivr.net/npm/vega-embed@6.17.0"></script>
-<script src="vega_lite_vis.js"></script>
-<title>Homework 9 </title>
-</head>
-<body>
-<h1>Homework 9</h1>
-<div id="bar_chart">
-</div>
-</body>
-</html>
 
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/vega@5.20.2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-lite@5.1.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-embed@6.17.0"></script>
+    <link rel="stylesheet" href="styles.css">
+    <title>Extreme Weather and Temperature Visualization</title>
+</head>
+
+<body>
+    <h1>Interactive Visualizations: Climate Insights for Australia</h1>
+    
+    <h2>Average Max Temperature at Weather Stations (2000-2080)</h2>
+    <p>Use the slider below to explore the changes in maximum temperature at 45 weather stations across Australia over time.</p>
+    <div id="temperature_chart"></div>
+
+    <h2>Extreme Weather Events Sunburst Chart</h2>
+    <p>Explore extreme weather events across Australian states.</p>
+    <div id="extreme_weather_chart"></div>
+
+    <script>
+        // Embed the Average Max Temperature visualization
+        vegaEmbed("#temperature_chart", "max_temp.vg.json").then(function(result) {
+            var view = result.view;
+
+            // Define the years and the interval for the animation
+            const years = [2000, 2020, 2040, 2080];
+            let yearIndex = 0;
+
+            function animateYear() {
+                view.signal("yearSelection", years[yearIndex]).run();
+                yearIndex = (yearIndex + 1) % years.length;  // Cycle through the years
+            }
+
+            // Set the interval for year change (e.g., every 2 seconds)
+            setInterval(animateYear, 2000);
+        }).catch(console.error);
+
+        // Embed the Extreme Weather Events Sunburst Chart
+        vegaEmbed("#extreme_weather_chart", "extremeweather.vg.json").then(function(result) {
+            console.log('Extreme Weather Visualization successfully embedded.');
+        }).catch(console.error);
+    </script>
+
+</body>
+
+</html>
