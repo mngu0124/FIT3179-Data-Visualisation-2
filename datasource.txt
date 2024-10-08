@@ -1,0 +1,4 @@
+co2 emission - https://data.gov.au/dataset/ds-dga-77726fe7-ac78-4e4d-a8f7-05c55b417858/details?q=co2%20emissions
+max temperature - BOM
+extreme weather - BOM
+economic cost - https://www.climatecouncil.org.au/wp-content/uploads/2019/05/Costs-of-climate-change-report.pdf
